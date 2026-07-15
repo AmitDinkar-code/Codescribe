@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>codescribe — showcase</title>
+<style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #0d1117; color: #e6edf3;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: #58a6ff; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #1f2630; padding: .12em .38em; border-radius: 5px;
+      font-size: .88em; color: #cdd9e5;
+    }
+    pre.code {
+      background: #0b0f14; border: 1px solid #30363d; border-radius: 8px;
+      padding: 14px 16px; overflow-x: auto; margin: 10px 0 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12.5px; line-height: 1.5; color: #cdd9e5;
+    }
+    pre.code code { background: none; padding: 0; font-size: inherit; color: inherit; }
+    pre.code.small { font-size: 11.5px; }
+    .header {
+      background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+      border-bottom: 1px solid #30363d; padding: 30px 40px;
+    }
+    .header h1 { margin: 0; font-size: 30px; letter-spacing: -.5px; }
+    .header h1 .dot { color: #58a6ff; }
+    .header .sub { margin: 8px 0 0; color: #8b949e; font-size: 15px; }
+    .pipeline { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      border: 1px solid #30363d; background: #161b22; color: #8b949e;
+      padding: 5px 12px; border-radius: 20px; font-size: 12.5px;
+    }
+    .pill b { color: #e6edf3; font-weight: 600; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 40px 60px; }
+    .blurb {
+      background: #161b22; border: 1px solid #30363d; border-left: 3px solid #58a6ff;
+      border-radius: 8px; padding: 16px 20px; margin: 0 0 26px; color: #c9d4e0;
+    }
+    .blurb b { color: #e6edf3; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+    .panel {
+      background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+      padding: 20px 22px; margin-bottom: 22px;
+    }
+    .panel-title { margin: 0 0 14px; font-size: 17px; display: flex; align-items: baseline; gap: 8px; }
+    .col-label {
+      display: inline-block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: #8b949e; margin-bottom: 10px; font-weight: 600;
+    }
+    .filecard { margin-bottom: 16px; }
+    .filehead { display: flex; align-items: center; justify-content: space-between; }
+    .fname { font-family: ui-monospace, Menlo, Consolas, monospace; color: #58a6ff; font-size: 13.5px; }
+    .badge {
+      font-size: 10.5px; letter-spacing: .5px; padding: 2px 8px; border-radius: 10px;
+      border: 1px solid #30363d; color: #8b949e; background: #0b0f14; white-space: nowrap;
+    }
+    .badge.good { color: #3fb950; border-color: #1c3a26; }
+    .badge.bad { color: #f85149; border-color: #43222a; }
+    .stats { display: flex; gap: 26px; margin: 4px 0 14px; }
+    .stat { display: flex; flex-direction: column; }
+    .stat .num { font-size: 26px; font-weight: 700; line-height: 1; }
+    .stat .lbl { font-size: 11.5px; color: #8b949e; margin-top: 4px; }
+    .graphwrap {
+      background: #0b0f14; border: 1px solid #30363d; border-radius: 8px; padding: 8px;
+    }
+    .cyclebox { margin-top: 12px; font-size: 13px; color: #8b949e; }
+    .cyclebox code { color: #f85149; }
+    .telemetry { margin-top: 16px; }
+    .muted { color: #8b949e; }
+    .small { font-size: 12.5px; }
+    /* Rendered README */
+    .readme h1 { font-size: 24px; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin: 22px 0 14px; }
+    .readme h2 { font-size: 19px; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin: 26px 0 12px; }
+    .readme h3 { font-size: 16px; margin: 20px 0 8px; }
+    .readme h4 { font-size: 14px; color: #8b949e; text-transform: uppercase; letter-spacing: .5px; margin: 16px 0 6px; }
+    .readme p { margin: 8px 0; }
+    .readme ul { margin: 8px 0; padding-left: 22px; }
+    .readme li { margin: 4px 0; }
+    .readme hr { border: none; border-top: 1px solid #30363d; margin: 24px 0; }
+    .readme h2:first-child, .readme h1:first-child { margin-top: 0; }
+    .footer { text-align: center; color: #8b949e; font-size: 12.5px; margin-top: 36px; }
+    </style>
+</head>
+<body>
+  <header class="header">
+    <h1>codescribe<span class="dot">.</span></h1>
+    <p class="sub">Reads a Python codebase <b>without executing it</b>, maps how modules depend on
+    each other, flags cyclic imports, and renders a clean README — here, fully offline (<code>--no-llm</code>).</p>
+    <div class="pipeline"><span class="pill"><b>1</b> AST extract</span><span class="pill"><b>2</b> dependency graph</span><span class="pill"><b>3</b> schema-validated docs <i>(offline)</i></span><span class="pill"><b>4</b> Markdown render</span></div>
+  </header>
+
+  <main class="wrap">
+    <div class="blurb">
+      <b>What this is.</b> A static demo of the codescribe CLI. It was run against the bundled
+      <code>sample_repo/</code> in deterministic, no-API-key mode. The left column is the <b>input</b>
+      (the actual source files); the right column is the <b>output</b> (the generated README). In the
+      middle is the dependency graph codescribe builds internally — including the intentional
+      <code>order ↔ customer</code> import cycle it detects.
+    </div>
+
+    
+      <section class="panel">
+        <h2 class="panel-title">Dependency graph <span class="muted">(graph.py)</span></h2>
+        <p class="muted small">Directed import graph over the sample's modules. A DFS with a
+        recursion stack flags cyclic imports; the red edges/nodes are the detected cycle.</p>
+        <div class="stats">
+          <div class="stat"><span class="num" style="color:#58a6ff">5</span><span class="lbl">modules</span></div>
+          <div class="stat"><span class="num" style="color:#e6edf3">5</span><span class="lbl">import edges</span></div>
+          <div class="stat"><span class="num" style="color:#f85149">1</span><span class="lbl">cycles</span></div>
+        </div>
+        <div class="graphwrap"><svg viewBox="0 0 640 420" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Module dependency graph"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/></marker><marker id="arrowbad" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#f85149"/></marker></defs><line x1="438.4" y1="181.3" x2="261.0" y2="310.2" stroke="#f85149" stroke-width="2.4" marker-end="url(#arrowbad)"/><line x1="432.7" y1="163.6" x2="213.3" y2="163.6" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/><line x1="417.4" y1="302.8" x2="451.5" y2="197.9" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/><line x1="256.1" y1="313.7" x2="433.5" y2="184.8" stroke="#f85149" stroke-width="2.4" marker-end="url(#arrowbad)"/><line x1="222.6" y1="302.8" x2="188.5" y2="197.9" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/><circle cx="320.0" cy="60.0" r="30" fill="#21262d" stroke="#58a6ff" stroke-width="2"/><text x="320.0" y="64.0" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#e6edf3"></text><circle cx="462.7" cy="163.6" r="30" fill="#21262d" stroke="#f85149" stroke-width="2"/><text x="462.7" y="167.6" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#e6edf3">customer</text><circle cx="408.2" cy="331.4" r="30" fill="#21262d" stroke="#58a6ff" stroke-width="2"/><text x="408.2" y="335.4" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#e6edf3">main</text><circle cx="231.8" cy="331.4" r="30" fill="#21262d" stroke="#f85149" stroke-width="2"/><text x="231.8" y="335.4" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#e6edf3">order</text><circle cx="177.3" cy="163.6" r="30" fill="#21262d" stroke="#58a6ff" stroke-width="2"/><text x="177.3" y="167.6" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#e6edf3">utils</text></svg></div>
+        <div class="cyclebox"><span class="badge bad">CYCLE</span> <code>customer → order → customer</code></div>
+      </section>
+
+    <div class="grid">
+      <section class="panel">
+        <span class="col-label">Input → sample_repo/</span>
+        <h2 class="panel-title">Source files <span class="muted">(5 modules)</span></h2>
+        <div class="filecard"><div class="filehead"><span class="fname">__init__.py</span><span class="badge">6 lines</span></div><pre class="code"><code>"""A tiny demo store package used to exercise codescribe.
+
+It deliberately contains a cyclic import (`order` &lt;-&gt; `customer`) so the
+dependency-cycle detector has something to find.
+"""
+</code></pre></div><div class="filecard"><div class="filehead"><span class="fname">customer.py</span><span class="badge">24 lines</span></div><pre class="code"><code>"""Customer domain model.
+
+Imports `order` at module level, which in turn imports this module — the
+intentional cyclic dependency in this demo package.
+"""
+
+from __future__ import annotations
+
+from . import order
+from .utils import slugify
+
+
+class Customer:
+    """A store customer who can place orders."""
+
+    def __init__(self, name: str, email: str) -&gt; None:
+        self.name = name
+        self.email = email
+        self.handle = slugify(name)
+
+    def place_order(self, items: list[str]) -&gt; "order.Order":
+        """Create and return a new Order for this customer."""
+        return order.Order(customer=self, items=items)
+</code></pre></div><div class="filecard"><div class="filehead"><span class="fname">main.py</span><span class="badge">17 lines</span></div><pre class="code"><code>"""Entry point that wires the demo store together."""
+
+from __future__ import annotations
+
+from .customer import Customer
+
+
+def run_demo() -&gt; str:
+    """Create a customer, place an order, and return its receipt."""
+    alice = Customer(name="Alice Smith", email="alice@example.com")
+    order = alice.place_order(items=["widget", "gadget", "gizmo"])
+    return order.receipt()
+
+
+if __name__ == "__main__":
+    print(run_demo())
+</code></pre></div><div class="filecard"><div class="filehead"><span class="fname">order.py</span><span class="badge">28 lines</span></div><pre class="code"><code>"""Order domain model.
+
+Imports `customer` at module level, completing the `order` &lt;-&gt; `customer` cycle.
+"""
+
+from __future__ import annotations
+
+from . import customer
+from .utils import format_currency
+
+PRICE_PER_ITEM = 9.99
+
+
+class Order:
+    """An order placed by a customer for a list of items."""
+
+    def __init__(self, customer: "customer.Customer", items: list[str]) -&gt; None:
+        self.customer = customer
+        self.items = items
+
+    def total(self) -&gt; float:
+        """Return the order total as a float."""
+        return len(self.items) * PRICE_PER_ITEM
+
+    def receipt(self) -&gt; str:
+        """Return a human-readable receipt string."""
+        return f"{self.customer.name}: {format_currency(self.total())}"
+</code></pre></div><div class="filecard"><div class="filehead"><span class="fname">utils.py</span><span class="badge">14 lines</span></div><pre class="code"><code>"""Stateless helper functions with no internal dependencies (a clean leaf)."""
+
+from __future__ import annotations
+
+
+def format_currency(amount: float, symbol: str = "$") -&gt; str:
+    """Format a numeric amount as a currency string with two decimals."""
+    return f"{symbol}{amount:,.2f}"
+
+
+def slugify(text: str) -&gt; str:
+    """Convert arbitrary text into a lowercase, hyphenated slug."""
+    return "-".join(text.lower().split())
+</code></pre></div>
+      </section>
+
+      <section class="panel">
+        <span class="col-label">Output → generated README</span>
+        <h2 class="panel-title">codescribe README <span class="muted">(--no-llm)</span></h2>
+        <div class="telemetry"><span class="badge good">codescribe log</span><pre class="code small"><code>[codescribe] parsed 5 module(s).
+[codescribe] 5 internal import edge(s), 1 cycle(s) detected.
+[codescribe] documentation generated (offline).
+[codescribe] wrote /Users/virajvekariya/Desktop/Extra/amit's project/all projects in Windows/codescribe/sample_README.md</code></pre></div>
+        <div class="readme"><h1>sample_repo</h1>
+<p><code>sample_repo</code> is a Python project containing 5 module(s). This documentation was generated by static analysis of the source (no code was executed).</p>
+<h2>Architecture</h2>
+<p>The project is organised into 5 module(s) connected through their import relationships. Static analysis found 1 cyclic import dependency(ies), flagged below — these are the highest-risk coupling points in the codebase.</p>
+<h2>⚠️ Dependency Cycle Warnings</h2>
+<p>1 cyclic import dependency(ies) were detected:</p>
+<h3>HIGH — <code>customer → order → customer</code></h3>
+<p>These modules import each other, forming a cycle. Cyclic imports make initialization order fragile, can cause ImportError at runtime, and couple the modules so they cannot be understood or tested in isolation.</p>
+<p><strong>Suggested fix:</strong> Extract the shared types/functions into a third module that both depend on, defer one import to inside the function that needs it, or merge the modules if the split is artificial.</p>
+<h2>Installation</h2>
+<pre class="code" data-lang="bash"><code>git clone &lt;repo-url&gt;
+cd sample_repo
+pip install -e .</code></pre>
+<h2>Usage</h2>
+<p>Import the modules you need and call their functions/classes directly. See the per-module reference below.</p>
+<h2>Module Reference</h2>
+<h3><code>__init__.py</code></h3>
+<p>A tiny demo store package used to exercise codescribe.</p>
+<h3><code>customer.py</code></h3>
+<p>Customer domain model.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul><li>Defines class <code>Customer</code></li></ul>
+<h4>Classes</h4>
+<ul><li><strong><code>Customer</code></strong> — A store customer who can place orders.<ul><li>Key methods: place_order</li></ul></li></ul>
+<h3><code>main.py</code></h3>
+<p>Entry point that wires the demo store together.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul><li>Provides function(s): <code>run_demo</code></li></ul>
+<h4>Functions</h4>
+<ul><li><strong><code>def run_demo() -&gt; str</code></strong> — Create a customer, place an order, and return its receipt.</li></ul>
+<h3><code>order.py</code></h3>
+<p>Order domain model.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul><li>Defines class <code>Order</code></li></ul>
+<h4>Classes</h4>
+<ul><li><strong><code>Order</code></strong> — An order placed by a customer for a list of items.<ul><li>Key methods: total, receipt</li></ul></li></ul>
+<h3><code>utils.py</code></h3>
+<p>Stateless helper functions with no internal dependencies (a clean leaf).</p>
+<p><strong>Responsibilities:</strong></p>
+<ul><li>Provides function(s): <code>format_currency</code>, <code>slugify</code></li></ul>
+<h4>Functions</h4>
+<ul><li><strong><code>def format_currency(amount: float, symbol: str = '$') -&gt; str</code></strong> — Format a numeric amount as a currency string with two decimals.</li><li><strong><code>def slugify(text: str) -&gt; str</code></strong> — Convert arbitrary text into a lowercase, hyphenated slug.</li></ul>
+<hr/>
+<p>_Generated by codescribe — deterministic AST extraction → dependency-graph analysis → schema-validated LLM documentation._</p></div>
+      </section>
+    </div>
+
+    <p class="footer">Generated offline by <code>make_showcase.py</code> — no API keys, no network, no external assets.</p>
+  </main>
+</body>
+</html>
